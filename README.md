@@ -80,22 +80,10 @@ Available scenario names:
 - `src/output.rs` - terminal table rendering.
 - `README.md` - project intent, limits, and usage.
 
-## Extension points (safe to edit manually)
-
-- Add more attacker presets in `src/scenarios.rs`.
-- Add more mutation variants in `src/model.rs` and CLI flags in `src/main.rs`.
-- Improve property explanations in `src/eval.rs`.
-- Tune rule thresholds (for example, defense-in-depth logic) in `src/eval.rs`.
-- Add optional transcript-aware modeling later (without changing current CLI contract).
-
-## Notes for future integration
-
-TODO ideas are included in code for:
+## TODO:
 
 - more attacker scenarios
 - more mutation types
 - richer explanation text
 - future integration with actual Noise transcripts or symbolic tooling
-# noise-ikpsk2-workbench
-# noise-ikpsk2-workbench
-# noise-ikpsk2-workbench
+
