@@ -26,5 +26,5 @@ if [ -f "${REPO_ROOT}/Cargo.toml" ]; then
 fi
 
 echo "error: could not find the noise-protocol-workbench binary or repository checkout" >&2
-echo "install the CLI with 'cargo install --locked --path /path/to/noise_ikpsk2_workbench'" >&2
+echo "install the CLI with 'cargo install --locked --path /path/to/noise-protocol-workbench-source'" >&2
 exit 1

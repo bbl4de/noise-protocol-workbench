@@ -144,8 +144,8 @@ impl fmt::Display for PropertyStatus {
 
 /// Protocol mutation state for contributor slots.
 ///
-/// `Default` keeps every contributor enabled, which is closest to the older
-/// single-pattern baseline. For pattern-aware defaults, prefer `for_pattern`.
+/// `Default` keeps every contributor enabled.
+/// For pattern-aware defaults, prefer `for_pattern`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProtocolConfig {
     pub es: SecretVariant,

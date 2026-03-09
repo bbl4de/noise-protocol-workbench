@@ -131,6 +131,18 @@ The wrapper first tries the installed `noise-protocol-workbench` binary from `PA
 
 ### How Claude Code uses it
 
+The skill is intended to be directly invocable as:
+
+```text
+/noise-protocol-assumptions
+```
+
+You can also pass a natural-language task after the slash command:
+
+```text
+/noise-protocol-assumptions inspect this repo, infer the likely pattern, test init-static-compromised and psk-known, and summarize the heuristic trade-offs
+```
+
 When Claude Code is working in a repository that appears to use Noise, the skill can guide it to:
 
 - inspect the repository for a likely Noise pattern
@@ -149,6 +161,8 @@ Example manual command:
 ```bash
 ~/.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern IKpsk2 --scenario init-static-compromised --json
 ```
+
+If Claude says the skill is not listed in the current session, check `/context`. Claude Code can exclude some slash-invocable skills when the slash-command description budget is exhausted, so keeping the skill description short helps.
 
 ## Built-in attacker scenarios
 
@@ -187,4 +201,3 @@ Table B shows heuristic property impact:
 - Improve the heuristic rules in [src/eval.rs](/Users/bbl4de/Documents/A_work/cv_projects/noise_ikpsk2_workbench/src/eval.rs).
 - Improve table presentation or add other formats in [src/output.rs](/Users/bbl4de/Documents/A_work/cv_projects/noise_ikpsk2_workbench/src/output.rs).
 - Later, you can attach real transcript parsing or symbolic tooling without rewriting the current CLI layout.
-# noise-ikpsk2-workbench

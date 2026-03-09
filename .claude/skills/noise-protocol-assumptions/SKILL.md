@@ -1,11 +1,21 @@
 ---
 name: noise-protocol-assumptions
-description: Use this skill when a user wants to inspect, test, or discuss Noise protocol handshake assumptions, pattern selection, weakened DH/PSK lanes, or qualitative security trade-offs. It uses the local `noise-protocol-workbench` CLI to run heuristic analyses across important Noise patterns and summarize the results without claiming formal verification.
+description: Analyze Noise handshake assumptions and weakened DH or PSK scenarios with the local `noise-protocol-workbench` CLI. Use for pattern identification, compromise testing, and heuristic security trade-off review across important Noise patterns.
+user-invocable: true
+argument-hint: [repo focus, pattern hint, scenario, or CLI-style flags]
 ---
 
 # Noise Protocol Assumptions
 
 Use this skill to analyze a codebase or protocol design that appears to use the Noise framework.
+
+You can invoke it directly as:
+
+```text
+/noise-protocol-assumptions inspect this repo, infer the pattern, test a few compromise scenarios, and summarize the heuristic trade-offs
+```
+
+If the user invokes the skill directly with extra text after the slash command, treat that text as the user's scope and prioritization hints.
 
 This skill is for:
 
