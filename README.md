@@ -1,35 +1,109 @@
-# noise-ikpsk2-workbench
+# noise-protocol-workbench
 
-A small Rust CLI scaffold for **educational heuristic analysis** of the Noise **IKpsk2** handshake pattern.
+`noise-protocol-workbench` is a small Rust CLI for **educational, heuristic analysis of important Noise handshake patterns**.
 
-This tool models high-level secret dependencies and lets you mutate individual contributors (`es`, `ss`, `ee`, `se`, `psk`) to see how qualitative security properties change.
+The repository name is historical. The tool no longer focuses only on `IKpsk2`.
 
-**IT IS NOT A FORMAL QUANTITATIVE PROOF ENGINE NOR A FORMAL VERIFICATION TOOL, IT'S MEANT FOR EDUCATIONAL PURPOSES ONLY**
+It now supports a built-in catalog of important patterns from the Noise Explorer pattern list, including classic base patterns such as `N`, `K`, `X`, `NN`, `NK`, `XX`, extended `1` variants such as `XK1` and `I1X1`, and PSK variants such as `Npsk0`, `NNpsk2`, `IKpsk2`, and `XXpsk3`.
 
-## IKpsk2 - quick recap
+Pattern names and transcript shapes were taken from the Noise Explorer catalog:
+https://noiseexplorer.com/patterns/
 
-In Noise IKpsk2, this scaffold tracks five key secret contributors: `es`, `ss`, `ee`, `se` and `psk`.
 
-The evaluator models how compromises or mutations in those lanes influence a set of protocol properties.
+## How the model works
 
-## Build and run
+Each built-in pattern starts with a baseline set of contributor lanes inferred from its transcript shape.
+
+Examples:
+
+- `IKpsk2` uses `es`, `ss`, `ee`, `se`, and `psk`.
+- `XX` uses `es`, `ee`, and `se`.
+- `N` uses only `es`.
+- Non-PSK patterns mark the `psk` lane as `NotInPattern`.
+
+The evaluator distinguishes between:
+
+- a lane that is part of the pattern and still unknown to the attacker
+- a lane that becomes attacker-computable under a compromise scenario
+- a lane that the selected pattern does not use at all
+- a lane that you manually disabled with a CLI flag
+
+Some properties may show `N/A` when the selected pattern does not even attempt that property in this simplified model.
+
+## Install
+
+Install the CLI from this checkout:
+
+```bash
+cargo install --locked --path .
+```
+
+Install both the CLI and the Claude Code skill:
+
+```bash
+./scripts/install-local.sh
+```
+
+Install from GitHub with `curl`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bbl4de/noise-ikpsk2-workbench/main/scripts/install-via-curl.sh | bash
+```
+
+The local installer script:
+
+- installs the `noise-protocol-workbench` binary with Cargo
+- creates a personal Claude Code skill symlink at `~/.claude/skills/noise-protocol-assumptions`
+
+The curl installer:
+
+- installs the `noise-protocol-workbench` binary from the GitHub repository with Cargo
+- copies the Claude Code skill into `~/.claude/skills/noise-protocol-assumptions`
+
+If you only use Claude Code inside this repository, the project-local skill under `.claude/skills/noise-protocol-assumptions/` is already available without the install script.
+
+## Build
 
 ```bash
 cargo build
 ```
 
-Example commands:
+## CLI usage
+
+List the built-in pattern catalog:
 
 ```bash
-cargo run -- --scenario init-static-compromised
-cargo run -- --wrong-se --zero-psk --scenario init-static-compromised
-cargo run -- --omit-ee
-cargo run -- --json --scenario both-statics-compromised
+cargo run -- --list-patterns
 ```
+
+Run the default pattern (`IKpsk2`):
+
+```bash
+cargo run --
+```
+
+Pick a different pattern:
+
+```bash
+cargo run -- --pattern XX
+cargo run -- --pattern NKpsk2 --scenario resp-static-compromised
+cargo run -- --pattern XXpsk3 --zero-psk
+cargo run -- --pattern N --json
+```
+
+Disable or mutate lanes that exist in the selected pattern:
+
+```bash
+cargo run -- --pattern IKpsk2 --wrong-se --zero-psk
+cargo run -- --pattern XX --omit-ee
+```
+
+If you try to mutate a lane that the selected pattern does not have, the CLI returns an error instead of silently doing something misleading.
 
 ## CLI flags
 
-All the CLI flags:
+- `--pattern <name>`
+- `--list-patterns`
 - `--scenario <name>`
 - `--wrong-se`
 - `--zero-psk`
@@ -39,7 +113,45 @@ All the CLI flags:
 - `--omit-se`
 - `--json`
 
-And the scenario names that are currently available ( will be expanding in the future ):
+## Claude Code skill
+
+This repository now includes a Claude Code skill:
+
+```text
+.claude/skills/noise-protocol-assumptions/
+```
+
+The skill uses this wrapper script:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh
+```
+
+The wrapper first tries the installed `noise-protocol-workbench` binary from `PATH`. If the binary is not installed, it falls back to `cargo run` from this repository.
+
+### How Claude Code uses it
+
+When Claude Code is working in a repository that appears to use Noise, the skill can guide it to:
+
+- inspect the repository for a likely Noise pattern
+- choose one or more plausible patterns to test
+- run the local CLI with `--json`
+- summarize the result as heuristic protocol reasoning
+
+Example prompt to Claude Code in another project:
+
+```text
+Analyze this repo's Noise protocol assumptions. Figure out the likely pattern, run the noise-protocol-assumptions skill, and tell me which assumptions look fragile.
+```
+
+Example manual command:
+
+```bash
+~/.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern IKpsk2 --scenario init-static-compromised --json
+```
+
+## Built-in attacker scenarios
+
 - `none`
 - `init-static-compromised`
 - `resp-static-compromised`
@@ -49,11 +161,30 @@ And the scenario names that are currently available ( will be expanding in the f
 - `psk-known`
 - `all-statics-later-compromised`
 
-## TODO:
+## Output overview
 
-- more attacker scenarios
-- more mutation types
-- richer explanation text
-- future integration with actual Noise transcripts or symbolic tooling
+Table A shows contributor exposure:
 
+- whether the lane is enabled
+- whether it is `Correct`, mutated, omitted, or `NotInPattern`
+- whether the attacker knows it in the selected scenario
+- why the evaluator reached that conclusion
+
+Table B shows heuristic property impact:
+
+- initiator identity confidentiality
+- responder authentication
+- forward secrecy
+- KCI resistance under initiator static compromise
+- defense in depth
+- PSK backup protection
+- overall session key protection
+
+## Notes for extension
+
+- Add more mutation types in [src/model.rs](/Users/bbl4de/Documents/A_work/cv_projects/noise_ikpsk2_workbench/src/model.rs).
+- Add richer compromise presets in [src/scenarios.rs](/Users/bbl4de/Documents/A_work/cv_projects/noise_ikpsk2_workbench/src/scenarios.rs).
+- Improve the heuristic rules in [src/eval.rs](/Users/bbl4de/Documents/A_work/cv_projects/noise_ikpsk2_workbench/src/eval.rs).
+- Improve table presentation or add other formats in [src/output.rs](/Users/bbl4de/Documents/A_work/cv_projects/noise_ikpsk2_workbench/src/output.rs).
+- Later, you can attach real transcript parsing or symbolic tooling without rewriting the current CLI layout.
 # noise-ikpsk2-workbench
