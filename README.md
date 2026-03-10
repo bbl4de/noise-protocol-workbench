@@ -2,8 +2,6 @@
 
 `noise-protocol-workbench` is a small Rust CLI for **educational, heuristic analysis of important Noise handshake patterns**.
 
-The repository name is historical. The tool no longer focuses only on `IKpsk2`.
-
 It now supports a built-in catalog of important patterns from the Noise Explorer pattern list, including classic base patterns such as `N`, `K`, `X`, `NN`, `NK`, `XX`, extended `1` variants such as `XK1` and `I1X1`, and PSK variants such as `Npsk0`, `NNpsk2`, `IKpsk2`, and `XXpsk3`.
 
 Pattern names and transcript shapes were taken from the Noise Explorer catalog:
