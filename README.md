@@ -127,6 +127,12 @@ The skill uses this wrapper script:
 .claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh
 ```
 
+It also includes a first-pass audit scan script:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/scan-noise-audit-clues.sh
+```
+
 The wrapper first tries the installed `noise-protocol-workbench` binary from `PATH`. If the binary is not installed, it falls back to `cargo run` from this repository.
 
 ### How Claude Code uses it
@@ -140,26 +146,35 @@ The skill is intended to be directly invocable as:
 You can also pass a natural-language task after the slash command:
 
 ```text
-/noise-protocol-assumptions inspect this repo, infer the likely pattern, test init-static-compromised and psk-known, and summarize the heuristic trade-offs
+/noise-protocol-assumptions audit this repo's Noise handshake implementation, verify the actual pattern and DH token wiring, then visualize the security impact of confirmed issues
 ```
 
-When Claude Code is working in a repository that appears to use Noise, the skill can guide it to:
+The intended workflow is now:
 
-- inspect the repository for a likely Noise pattern
-- choose one or more plausible patterns to test
-- run the local CLI with `--json`
-- summarize the result as heuristic protocol reasoning
+1. inspect the target repository for the claimed Noise construction and handshake flow
+2. verify pattern names, constants, ECDH call sites, and state handling against the Noise specification
+3. identify confirmed implementation findings such as zeroed PSK, omitted DH lanes, or truly misbound tokens
+4. map those confirmed findings into the CLI model
+5. use the CLI as a final qualitative visualization layer
+
+This is deliberately different from a pure scenario simulator. The skill should audit the codebase first and only then use the CLI.
 
 Example prompt to Claude Code in another project:
 
 ```text
-Analyze this repo's Noise protocol assumptions. Figure out the likely pattern, run the noise-protocol-assumptions skill, and tell me which assumptions look fragile.
+Audit this repo's Noise handshake implementation. Verify the claimed pattern, check the PSK and ECDH wiring against the Noise spec, then use the noise-protocol-assumptions skill to visualize the effect of any confirmed issues.
 ```
 
 Example manual command:
 
 ```bash
 ~/.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern IKpsk2 --scenario init-static-compromised --json
+```
+
+Example first-pass audit scan:
+
+```bash
+~/.claude/skills/noise-protocol-assumptions/scripts/scan-noise-audit-clues.sh .
 ```
 
 If Claude says the skill is not listed in the current session, check `/context`. Claude Code can exclude some slash-invocable skills when the slash-command description budget is exhausted, so keeping the skill description short helps.
