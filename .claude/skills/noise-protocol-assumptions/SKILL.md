@@ -162,22 +162,76 @@ List built-in patterns:
 .claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --list-patterns
 ```
 
-Visualize a verified zero-PSK issue in `IKpsk2`:
+Visualize a clean baseline for the default pattern:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --json
+```
+
+Visualize a clean baseline for a different pattern:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern XX --json
+```
+
+Visualize a verified zero-PSK issue in a PSK pattern:
 
 ```bash
 .claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern IKpsk2 --zero-psk --json
 ```
 
-Visualize a verified wrong-`se` issue:
+Visualize a verified wrong-`se` issue in a pattern that uses `se`:
 
 ```bash
 .claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern IKpsk2 --wrong-se --json
 ```
 
-Visualize a verified implementation issue under a compromise scenario:
+Visualize a verified omitted lane:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern XX --omit-ee --json
+```
+
+Visualize a static-key compromise scenario:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern IK --scenario resp-static-compromised --json
+```
+
+Visualize a later static compromise scenario:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern XX --scenario all-statics-later-compromised --json
+```
+
+Visualize an ephemeral compromise scenario:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern NK --scenario init-ephemeral-compromised --json
+```
+
+Visualize PSK exposure in a PSK variant:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern XXpsk3 --scenario psk-known --json
+```
+
+Visualize a combined implementation weakness and compromise scenario:
 
 ```bash
 .claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern IKpsk2 --wrong-se --zero-psk --scenario init-static-compromised --json
+```
+
+Visualize a pattern with no PSK lane to compare against a PSK-backed design:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern XK --scenario init-static-compromised --json
+```
+
+Visualize a one-way pattern where some properties are expected to be weak or `N/A`:
+
+```bash
+.claude/skills/noise-protocol-assumptions/scripts/run-noise-workbench.sh --pattern N --json
 ```
 
 ## Notes
