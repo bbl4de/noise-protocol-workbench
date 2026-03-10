@@ -30,35 +30,67 @@ Some properties may show `N/A` when the selected pattern does not even attempt t
 
 ## Install
 
+### Install both the CLI and the Claude Code skill
+
+Recommended from a local checkout:
+
+```bash
+./scripts/install-local.sh
+```
+
+Install both from GitHub with `curl`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bbl4de/noise-ikpsk2-workbench/main/scripts/install-via-curl.sh | bash
+```
+
+The local installer:
+
+- installs the `noise-protocol-workbench` binary with Cargo
+- creates a symlink at `~/.claude/skills/noise-protocol-assumptions`
+
+The curl installer:
+
+- installs the `noise-protocol-workbench` binary from GitHub with Cargo
+- copies the skill into `~/.claude/skills/noise-protocol-assumptions`
+
+### Install only the Claude Code skill
+
+If you only use Claude Code inside this repository, the project-local skill under `.claude/skills/noise-protocol-assumptions/` is already available and you do not need to install it globally.
+
+To make the skill available globally from this checkout:
+
+```bash
+mkdir -p ~/.claude/skills
+ln -s "$(pwd)/.claude/skills/noise-protocol-assumptions" ~/.claude/skills/noise-protocol-assumptions
+```
+
+If you prefer a copied skill instead of a symlink:
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R .claude/skills/noise-protocol-assumptions ~/.claude/skills/noise-protocol-assumptions
+```
+
+### Install only the CLI
+
 Install the CLI from this checkout:
 
 ```bash
 cargo install --locked --path .
 ```
 
-Install both the CLI and the Claude Code skill:
+Install the CLI from GitHub:
 
 ```bash
-./scripts/install-local.sh
+cargo install --locked --git https://github.com/bbl4de/noise-ikpsk2-workbench.git
 ```
 
-Install from GitHub with `curl`:
+After CLI-only install, you can run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bbl4de/noise-ikpsk2-workbench/main/scripts/install-via-curl.sh | bash
+noise-protocol-workbench --list-patterns
 ```
-
-The local installer script:
-
-- installs the `noise-protocol-workbench` binary with Cargo
-- creates a personal Claude Code skill symlink at `~/.claude/skills/noise-protocol-assumptions`
-
-The curl installer:
-
-- installs the `noise-protocol-workbench` binary from the GitHub repository with Cargo
-- copies the Claude Code skill into `~/.claude/skills/noise-protocol-assumptions`
-
-If you only use Claude Code inside this repository, the project-local skill under `.claude/skills/noise-protocol-assumptions/` is already available without the install script.
 
 ## Build
 
